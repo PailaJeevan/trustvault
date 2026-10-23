@@ -1,5 +1,6 @@
 """TrustVault application factory."""
 import logging
+import os
 
 from flask import Flask, jsonify, request, send_from_directory
 from werkzeug.exceptions import HTTPException
@@ -32,8 +33,11 @@ def create_app(config: Config | None = None) -> Flask:
     if cfg.TRUSTED_PROXIES:
         # Trust X-Forwarded-For / -Proto only from the number of proxies we
         # actually sit behind; otherwise a client could spoof its IP in the audit.
-        app.wsgi_app = ProxyFix(app.wsgi_app, x_for=cfg.TRUSTED_PROXIES, x_proto=cfg.TRUSTED_PROXIES,
-                                x_host=cfg.TRUSTED_PROXIES)
+        # Render appends its own internal address to X-Forwarded-For, so there
+           # the visitor is one entry further back (TV_FORWARDED_FOR_HOPS=2).
+           hops = int(os.environ.get("TV_FORWARDED_FOR_HOPS", cfg.TRUSTED_PROXIES))
+           app.wsgi_app = ProxyFix(app.wsgi_app, x_for=hops, x_proto=cfg.TRUSTED_PROXIES,
+                                   x_host=cfg.TRUSTED_PROXIES)
 
     # Create the schema on first start.
     db = connect(cfg.DATABASE_PATH)
