@@ -26,6 +26,8 @@ services:
         value: "1"
       - key: TV_TRUSTED_PROXIES
         value: "1"
+      - key: TV_FORWARDED_FOR_HOPS
+        value: "2"
     # disk:
     #   name: trustvault-data
     #   mountPath: /data
