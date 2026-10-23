@@ -39,9 +39,9 @@ class Session:
         req = urllib.request.Request(self.base + path, data=data, method=method, headers=hdrs)
         try:
             with self.opener.open(req, timeout=30) as r:
-                return r.status, r.read(), dict(r.headers)
+                return r.status, r.read(), r.headers
         except urllib.error.HTTPError as e:
-            return e.code, e.read(), dict(e.headers)
+            return e.code, e.read(), e.headers
 
     def login(self, who):
         email = EMAIL.get(who, f"{who}@trustvault.test")
@@ -80,8 +80,11 @@ def main():
     check("no Referer leakage", h.get("Referrer-Policy") == "no-referrer")
     if https:
         check("HSTS enabled", "max-age" in h.get("Strict-Transport-Security", ""))
+        class NoRedirect(urllib.request.HTTPRedirectHandler):
+            def redirect_request(self, *args, **kwargs):
+                return None  # report the redirect itself instead of following it
         try:
-            urllib.request.urlopen(base.replace("https://", "http://", 1) + "/healthz", timeout=15)
+            urllib.request.build_opener(NoRedirect).open(base.replace("https://", "http://", 1) + "/healthz", timeout=15)
             plain_ok = False
         except urllib.error.HTTPError as e:
             plain_ok = e.code in (301, 302, 307, 308)
