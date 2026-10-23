@@ -1,0 +1,32 @@
+# Render Blueprint: New -> Blueprint -> pick this repo -> Apply.
+#
+# FREE plan (as written): works, costs nothing, BUT Render wipes the disk on
+# every restart and after 15 minutes with no visitors. The app re-seeds the
+# demo automatically on each start, so it is never empty - but uploads, shares
+# and the audit trail from earlier sessions are gone. See THREATS.md OP-17.
+#
+# PERSISTENT (recommended for judging, paid): change `plan: free` to
+# `plan: starter` and uncomment the `disk:` block. The database and audit
+# trail then survive restarts.
+services:
+  - type: web
+    name: trustvault
+    runtime: docker
+    plan: free
+    region: singapore
+    healthCheckPath: /healthz
+    envVars:
+      # Render generates a random base64 256-bit value once and keeps it.
+      # Two different keys, never in Git. Copy TV_MASTER_KEY somewhere safe.
+      - key: TV_MASTER_KEY
+        generateValue: true
+      - key: TV_AUDIT_KEY
+        generateValue: true
+      - key: TV_DEMO_MODE
+        value: "1"
+      - key: TV_TRUSTED_PROXIES
+        value: "1"
+    # disk:
+    #   name: trustvault-data
+    #   mountPath: /data
+    #   sizeGB: 1
