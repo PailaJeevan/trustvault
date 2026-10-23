@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>TrustVault</title>
+  <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="/static/fonts/Roboto-Slab-Bold.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/static/fonts/lato-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/static/css/app.css">
+  <!-- Classic, blocking: applies the saved theme before first paint (no inline script; CSP stays strict). -->
+  <script src="/static/js/theme-init.js"></script>
+  <script type="module" src="/static/js/main.js"></script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <div id="app" class="app"><div class="boot" role="status">Opening the vault…</div></div>
+  <div id="overlay-root"></div>
+  <div id="toasts" class="toasts" role="status" aria-live="polite"></div>
+</body>
+</html>
