@@ -1,0 +1,14 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+instance/
+*.db
+*.db-wal
+*.db-shm
+.env
+dev_keys.json
+*.jsonl
+
+# personal notes, never published
+docs/GUIDE.md
