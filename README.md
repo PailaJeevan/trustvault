@@ -2,7 +2,7 @@
 
 Secure document sharing with a real audit trail. A document can be reached only by someone it was granted to, by name. Taking access away works on the next request. Every access is recorded, including the refused ones, in a hash-chained log that cannot be quietly altered.
 
-**Live demo:** `https://trustvault-15td.onrender.com` ← replace after deploying (PythonAnywhere or Render, see [DEPLOY.md](DEPLOY.md))
+**Live demo:** https://trustvault-15td.onrender.com (Render free plan: it sleeps after 15 minutes idle, so the first visit can take about a minute, and it resets to the demo data when it wakes. Sign-in details are in the table below.)
 
 **Stack:** Python 3.11+ · Flask · SQLite · `cryptography` (AES-256-GCM). Three dependencies. No front-end framework.
 
@@ -73,7 +73,7 @@ The full permission model is explained in [WRITEUP.md](WRITEUP.md), the threats 
 ## Run it locally (from a clean clone)
 
 ```bash
-git clone https://github.com/YOUR-USERNAME/trustvault.git
+git clone https://github.com/PailaJeevan/trustvault.git
 cd trustvault
 python3 -m venv .venv
 source .venv/bin/activate            # Windows: .venv\Scripts\activate
@@ -112,7 +112,7 @@ Store the backup and `TV_MASTER_KEY` separately. Neither one is useful without t
 Full click-by-click instructions for PythonAnywhere (free, HTTPS) are in **[DEPLOY.md](DEPLOY.md)**, including a troubleshooting table. After deploying, prove the live site holds:
 
 ```bash
-python -m scripts.check_live https://YOUR-USERNAME.pythonanywhere.com
+python -m scripts.check_live https://trustvault-15td.onrender.com  # 44 attacks against the deployed site
 ```
 
 A `Dockerfile` and a one-click Render Blueprint (`render.yaml`) are included. Read the plan comparison in DEPLOY.md first: on Render's free plan the data, including the audit trail, resets when the server sleeps.
