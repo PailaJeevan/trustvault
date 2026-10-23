@@ -117,7 +117,13 @@ See [PROMPTS.md](PROMPTS.md) for dated entries. In summary, the places where the
 
 - MFA is optional, not enforced for any role (AN-12). Login lockout can be used to annoy a known user (AN-1b).
 - Tail truncation of the audit log is detected only if someone keeps exports or reads the platform logs (AU-2b).
-- An administrator can still take over an account by resetting both password and MFA. It is flagged, not prevented (AC-3b).
+- Two administrators acting together can still take over an account or transfer documents. One administrator alone cannot: these actions need a second administrator's approval (AC-3b).
 - The PDF active-content check is pattern based and can be evaded by obfuscation (UP-3). There is no malware scanning.
 - Login IP throttling is per worker process (in memory). The per-account lockout is shared.
-- The UI is functional, not polished. There is no bulk sharing or bulk download.
+- There is no bulk sharing or bulk download. Bulk revoke exists in the access review.
+
+## Where it runs
+
+The live demo is at https://trustvault-15td.onrender.com on Render's free plan. It sleeps after 15 minutes without visitors and takes about a minute to wake. Its disk is not persistent, so it resets to the demo data on each wake (THREATS.md OP-17). The audit log's stdout witness lines still reach Render's log stream.
+
+Deploying it taught me two things, both recorded in PROMPTS.md (entries 19 and 20). Behind Render's proxy the audit trail first recorded Render's internal address instead of the visitor's, which I fixed by trusting exactly one more forwarded hop for the client address. And my own live checker reported six false failures, because it read header names case-sensitively and followed the HTTPS redirect.
