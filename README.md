@@ -39,12 +39,12 @@ Secure document sharing with a real audit trail. A document can be reached only 
 
 | Role | Email | Password | What to try |
 |---|---|---|---|
-| Administrator | `admin@trustvault.test` | `Admin-Demo-2026!` | Alerts, audit trail, users. You **cannot** open anyone's documents. |
+| Administrator | `jeevan@trustvault.test` | `Admin_123_demo` | Alerts, audit trail, users. You **cannot** open anyone's documents. |
 | Second administrator | `admin2@trustvault.test` | `Arjun-Demo-2026!` | Approves what the first admin requests (two-person rule: Administration → Approvals). |
-| Owner | `olivia@trustvault.test` | `Olivia-Demo-2026!` | Owns the salary letters, financials and partner contract. Share, revoke, view the custody record. |
-| Owner | `oscar@trustvault.test` | `Oscar-Demo-2026!` | Owns the engineering and audit papers, plus private notes nobody else can read. |
-| Viewer | `vera@trustvault.test` | `Vera-Demo-2026!` | Can read her own salary letter, edit the Q3 financials, and read the audit papers. |
-| Viewer | `victor@trustvault.test` | `Victor-Demo-2026!` | Can read his own salary letter and edit the bridge drawings. Nothing else. |
+| Owner | `advik@trustvault.test` | `Owner1_123_demo` | Owns the salary letters, financials and partner contract. Share, revoke, view the custody record. |
+| Owner | `vidya@trustvault.test` | `Owner2_123_demo` | Owns the engineering and audit papers, plus private notes nobody else can read. |
+| Viewer | `akhilesh@trustvault.test` | `Viewer1_123_demo` | Can read his own salary letter, edit the Q3 financials, and read the audit papers. |
+| Viewer | `akhil@trustvault.test` | `Viewer2_123_demo` | Can read his own salary letter and edit the bridge drawings. Nothing else. |
 | Viewer (external) | `ext@partner.test` | `Partner-Demo-2026!` | An outside partner. Can read the partner contract and nothing else. |
 | Owner with **two-step sign-in** | `maya@trustvault.test` | `Maya-Demo-2026!` + a code | Add the setup key `JBSWY3DPEHPK3PXPTRUSTVAULTDEMO22` to any authenticator app (Google or Microsoft Authenticator: "Enter a setup key", time-based), or run `oathtool --totp -b JBSWY3DPEHPK3PXPTRUSTVAULTDEMO22`. The key is public on purpose, for the demo only. |
 
