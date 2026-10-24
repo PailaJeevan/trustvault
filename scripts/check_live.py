@@ -1,6 +1,6 @@
 """Attack your DEPLOYED TrustVault the way a judge will, and report.
  
-    python -m scripts.check_live https://YOURNAME.pythonanywhere.com
+    python -m scripts.check_live https://trustvault-15td.onrender.com
  
 Uses the seeded demo accounts. Every write it attempts is one that MUST be
 refused; it changes nothing on the site (refused attempts do appear in the
@@ -214,4 +214,5 @@ def main():
  
 if __name__ == "__main__":
     main()
+ 
  
