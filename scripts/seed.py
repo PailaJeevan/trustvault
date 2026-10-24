@@ -1,8 +1,8 @@
 """Create demo users and documents.
-
+ 
     python -m scripts.seed            # seed an empty database
     python -m scripts.seed --reset    # delete the database file first (demo resets)
-
+ 
 Passwords for the demo accounts are printed in README.md. They are public on
 purpose (the judges need them); the accounts are marked is_demo so that, with
 TV_DEMO_MODE=1, nobody can change their password and lock the others out.
@@ -12,54 +12,54 @@ import io
 import os
 import sys
 import zipfile
-
+ 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
+ 
 from app import create_app  # noqa: E402
 from app import audit  # noqa: E402
 from datetime import timedelta  # noqa: E402
-
+ 
 from app.db import get_db, iso, now_iso, transaction, utcnow  # noqa: E402
 from app.security import encrypt_blob, encrypt_secret, hash_password, new_id  # noqa: E402
-
+ 
 DEMO_USERS = [
     # email,                    name,              role,     password
-    ("admin@trustvault.test",   "Asha Admin",      "admin",  "Admin-Demo-2026!"),
+    ("jeevan@trustvault.test",  "Jeevan",          "admin",  "Admin_123_demo"),
     # A second administrator: the two-person rule needs one to request and
     # another to approve password resets, MFA resets, transfers and promotions.
     ("admin2@trustvault.test",  "Arjun Admin",     "admin",  "Arjun-Demo-2026!"),
-    ("olivia@trustvault.test",  "Olivia Owner",    "owner",  "Olivia-Demo-2026!"),
-    ("oscar@trustvault.test",   "Oscar Owner",     "owner",  "Oscar-Demo-2026!"),
-    ("vera@trustvault.test",    "Vera Viewer",     "viewer", "Vera-Demo-2026!"),
-    ("victor@trustvault.test",  "Victor Viewer",   "viewer", "Victor-Demo-2026!"),
+    ("advik@trustvault.test",   "Advik",           "owner",  "Owner1_123_demo"),
+    ("vidya@trustvault.test",   "Vidya",           "owner",  "Owner2_123_demo"),
+    ("akhilesh@trustvault.test", "Akhilesh",     "viewer", "Viewer1_123_demo"),
+    ("akhil@trustvault.test",   "Akhil",           "viewer", "Viewer2_123_demo"),
     ("ext@partner.test",        "Pat Partner (external)", "viewer", "Partner-Demo-2026!"),
     ("maya@trustvault.test",    "Maya MFA Owner",  "owner",  "Maya-Demo-2026!"),
 ]
-
+ 
 # Maya has two-step sign-in turned on. This setup key is PUBLIC on purpose so
 # judges can add it to an authenticator app (or run `oathtool --totp -b KEY`)
 # and try the MFA flow. Never publish a real user's key.
 DEMO_MFA_USER = "maya"
 DEMO_MFA_SECRET = "JBSWY3DPEHPK3PXPTRUSTVAULTDEMO22"
-
+ 
 DEMO_TAGS = {
-    "Salary letter - Vera": ["payroll", "2026"],
-    "Salary letter - Victor": ["payroll", "2026"],
+    "Salary letter - Akhilesh": ["payroll", "2026"],
+    "Salary letter - Akhil": ["payroll", "2026"],
     "Q3 board financials": ["board", "quarterly"],
     "Master services agreement - Partner": ["contract", "external"],
     "Bridge drawings rev B": ["span-3", "structural"],
     "Site photo - span 3": ["span-3", "photo"],
 }
-
-
+ 
+ 
 def _docx(text: str) -> bytes:
     buf = io.BytesIO()
     with zipfile.ZipFile(buf, "w") as z:
         z.writestr("[Content_Types].xml", '<?xml version="1.0"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"/>')
         z.writestr("word/document.xml", f'<?xml version="1.0"?><w:document xmlns:w="x"><w:body><w:p><w:r><w:t>{text}</w:t></w:r></w:p></w:body></w:document>')
     return buf.getvalue()
-
-
+ 
+ 
 def _png(w: int = 480, h: int = 300) -> bytes:
     """A small generated 'site photo' (a sky-to-ground gradient with a bridge
     deck), so the demo has an image to open in the viewer. Standard library only."""
@@ -83,39 +83,39 @@ def _png(w: int = 480, h: int = 300) -> bytes:
     chunk = lambda tag, data: struct.pack(">I", len(data)) + tag + data + struct.pack(">I", zlib.crc32(tag + data) & 0xFFFFFFFF)
     return (b"\x89PNG\r\n\x1a\n" + chunk(b"IHDR", struct.pack(">IIBBBBB", w, h, 8, 2, 0, 0, 0))
             + chunk(b"IDAT", raw) + chunk(b"IEND", b""))
-
-
+ 
+ 
 def _pdf(text: str) -> bytes:
     return (b"%PDF-1.4\n1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj\n2 0 obj<</Type/Pages/Count 0>>endobj\n"
             b"% " + text.encode() + b"\ntrailer<</Root 1 0 R>>\n%%EOF\n")
-
-
+ 
+ 
 DEMO_DOCS = [
     # owner,   title,                                category,  filename,                 content
-    ("olivia", "Salary letter - Vera",               "HR",      "salary-vera.pdf",        _pdf("CONFIDENTIAL salary letter for Vera Viewer: INR 18,00,000")),
-    ("olivia", "Salary letter - Victor",             "HR",      "salary-victor.pdf",      _pdf("CONFIDENTIAL salary letter for Victor Viewer: INR 21,00,000")),
-    ("olivia", "Q3 board financials",                "Finance", "q3-financials.csv",      b"quarter,revenue,cost\nQ3,4200000,3100000\n"),
-    ("olivia", "Master services agreement - Partner","Legal",   "msa-partner.docx",       _docx("MSA between TrustVault Demo Co and Partner Ltd")),
-    ("oscar",  "Bridge drawings rev B",              "Engineering", "bridge-rev-b.txt",   b"Load calculations for span 3. Internal only.\n"),
-    ("oscar",  "Statutory audit working papers",     "Audit",   "audit-papers.md",        b"# FY26 audit\n\nSample of 40 invoices tested.\n"),
-    ("oscar",  "Site photo - span 3",                "Engineering", "span-3.png",          _png()),
-    ("oscar",  "Oscar's private notes",              "General", "notes.txt",              b"Nobody else should be able to read this.\n"),
+    ("advik",  "Salary letter - Akhilesh",           "HR",      "salary-akhilesh.pdf",    _pdf("CONFIDENTIAL salary letter for Akhilesh: INR 18,00,000")),
+    ("advik",  "Salary letter - Akhil",              "HR",      "salary-akhil.pdf",       _pdf("CONFIDENTIAL salary letter for Akhil: INR 21,00,000")),
+    ("advik",  "Q3 board financials",                "Finance", "q3-financials.csv",      b"quarter,revenue,cost\nQ3,4200000,3100000\n"),
+    ("advik",  "Master services agreement - Partner","Legal",   "msa-partner.docx",       _docx("MSA between TrustVault Demo Co and Partner Ltd")),
+    ("vidya",  "Bridge drawings rev B",              "Engineering", "bridge-rev-b.txt",   b"Load calculations for span 3. Internal only.\n"),
+    ("vidya",  "Statutory audit working papers",     "Audit",   "audit-papers.md",        b"# FY26 audit\n\nSample of 40 invoices tested.\n"),
+    ("vidya",  "Site photo - span 3",                "Engineering", "span-3.png",          _png()),
+    ("vidya",  "Vidya's private notes",              "General", "notes.txt",              b"Nobody else should be able to read this.\n"),
     ("maya",   "Board minutes - October",            "Legal",   "board-minutes.md",       b"# Board minutes\n\nOnly Maya can read this. Her account has two-step sign-in.\n"),
 ]
-
+ 
 DEMO_GRANTS = [
     # doc title,                         grantee,   permission, access ends in N days (None = never)
-    ("Salary letter - Vera",             "vera",    "read",  90),
-    ("Salary letter - Victor",           "victor",  "read",  None),
-    ("Q3 board financials",              "oscar",   "read",  30),
-    ("Q3 board financials",              "vera",    "edit",  None),
+    ("Salary letter - Akhilesh",         "akhilesh", "read",  90),
+    ("Salary letter - Akhil",            "akhil",    "read",  None),
+    ("Q3 board financials",              "vidya",   "read",  30),
+    ("Q3 board financials",              "akhilesh", "edit",  None),
     ("Master services agreement - Partner", "ext",  "read",  5),
-    ("Bridge drawings rev B",            "victor",  "edit",  60),
-    ("Site photo - span 3",              "victor",  "read",  60),
-    ("Statutory audit working papers",   "vera",    "read",  14),
+    ("Bridge drawings rev B",            "akhil",    "edit",  60),
+    ("Site photo - span 3",              "akhil",    "read",  60),
+    ("Statutory audit working papers",   "akhilesh", "read",  14),
 ]
-
-
+ 
+ 
 def seed(app):
     cfg = app.config["TV"]
     if cfg.ENV == "production" and not cfg.DEMO_MODE:  # AUTHZ-CHECK:seed-prod
@@ -167,8 +167,8 @@ def seed(app):
                 audit.append("permission.grant", actor_email="system:seed", document_id=did,
                              target_user_id=ids[grantee], details={"permission": perm, "expires_at": expires}, db=db)
         print(f"Seeded {len(DEMO_USERS)} users, {len(DEMO_DOCS)} documents, {len(DEMO_GRANTS)} grants.")
-
-
+ 
+ 
 if __name__ == "__main__":
     app = create_app()
     if "--reset" in sys.argv:
@@ -178,3 +178,4 @@ if __name__ == "__main__":
                 os.remove(path + suffix)
         app = create_app()
     seed(app)
+ 
