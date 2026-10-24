@@ -137,4 +137,4 @@ It is on Render's free plan, so the server sleeps after 15 minutes without visit
 | Schema and setup | [`app/schema.sql`](app/schema.sql), [`scripts/seed.py`](scripts/seed.py), this README |
 | API documentation | [API.md](API.md) |
 | Write-up | [WRITEUP.md](WRITEUP.md) |
-| Demo video | `LINK-TO-VIDEO` |
+| Demo video | [`LINK-TO-VIDEO`](https://github.com/PailaJeevan/trustvault/blob/main/TrustVault-Demo.mp4) |
