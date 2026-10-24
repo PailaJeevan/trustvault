@@ -1,7 +1,7 @@
 """Attack your DEPLOYED TrustVault the way a judge will, and report.
-
+ 
     python -m scripts.check_live https://YOURNAME.pythonanywhere.com
-
+ 
 Uses the seeded demo accounts. Every write it attempts is one that MUST be
 refused; it changes nothing on the site (refused attempts do appear in the
 audit trail and alerts, which is correct). Standard library only.
@@ -14,19 +14,22 @@ import sys
 import urllib.error
 import urllib.parse
 import urllib.request
-
-PW = {"admin": "Admin-Demo-2026!", "olivia": "Olivia-Demo-2026!", "victor": "Victor-Demo-2026!",
-      "vera": "Vera-Demo-2026!", "ext": "Partner-Demo-2026!", "maya": "Maya-Demo-2026!"}
-EMAIL = {"ext": "ext@partner.test"}
-
-
+ 
+# Variable names are roles in the story: admin, an owner (olivia), the person a
+# document is shared with (vera) and a stranger to it (victor).
+PW = {"admin": "Admin_123_demo", "olivia": "Owner1_123_demo", "victor": "Viewer2_123_demo",
+      "vera": "Viewer1_123_demo", "ext": "Partner-Demo-2026!", "maya": "Maya-Demo-2026!"}
+EMAIL = {"ext": "ext@partner.test", "admin": "jeevan@trustvault.test", "olivia": "advik@trustvault.test",
+         "victor": "akhil@trustvault.test", "vera": "akhilesh@trustvault.test"}
+ 
+ 
 class Session:
     def __init__(self, base):
         self.base = base.rstrip("/")
         self.jar = http.cookiejar.CookieJar()
         self.opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(self.jar))
         self.csrf = None
-
+ 
     def call(self, method, path, body=None, headers=None, raw=None, ctype="application/json", csrf=True):
         hdrs = dict(headers or {})
         data = raw
@@ -42,7 +45,7 @@ class Session:
                 return r.status, r.read(), r.headers
         except urllib.error.HTTPError as e:
             return e.code, e.read(), e.headers
-
+ 
     def login(self, who):
         email = EMAIL.get(who, f"{who}@trustvault.test")
         s, b, h = self.call("POST", "/api/auth/login", {"email": email, "password": PW[who]})
@@ -52,26 +55,26 @@ class Session:
         d = json.loads(b)
         self.csrf = d.get("csrfToken")
         return h
-
-
+ 
+ 
 def main():
     if len(sys.argv) != 2:
         sys.exit(__doc__)
     base = sys.argv[1].rstrip("/")
     https = base.startswith("https://")
     results = []
-
+ 
     def check(label, passed, detail=""):
         results.append(passed)
         print(("PASS  " if passed else "FAIL  ") + label + (f"  [{detail}]" if detail and not passed else ""))
-
+ 
     def section(t):
         print(f"\n--- {t}")
-
+ 
     anon = Session(base)
     s, _, h = anon.call("GET", "/healthz")
     check("site is up", s == 200, s)
-
+ 
     section("Transport and headers")
     s, _, h = anon.call("GET", "/")
     check("Content-Security-Policy is strict", "script-src 'self'" in h.get("Content-Security-Policy", ""), h.get("Content-Security-Policy"))
@@ -99,20 +102,20 @@ def main():
         check("session cookie is Secure with the __Host- prefix", "Secure" in cookie and cookie.startswith("__Host-"), cookie[:80])
     else:
         print("note  not HTTPS: Secure/__Host-/HSTS checks skipped (run against your https:// URL)")
-
+ 
     victor, admin, vera = Session(base), Session(base), Session(base)
     victor.login("victor"); admin.login("admin"); vera.login("vera")
-
+ 
     mine = json.loads(olivia.call("GET", "/api/documents?scope=mine")[1])["documents"]
-    secret = next((d for d in mine if d["title"] == "Salary letter - Vera"), None)
-    check("found Olivia's private document to attack", secret is not None)
+    secret = next((d for d in mine if d["title"] == "Salary letter - Akhilesh"), None)
+    check("found Advik's private document to attack", secret is not None)
     if not secret:
         sys.exit("Seed data missing - run: python -m scripts.seed --reset")
     D = secret["id"]
     grants = json.loads(olivia.call("GET", f"/api/documents/{D}/grants")[1])["grants"]
     G = grants[0]["id"] if grants else "0" * 32
-
-    section("A stranger (Victor) on every route of a document he was not given")
+ 
+    section("A stranger (Akhil) on every route of a document he was not given")
     routes = [("GET", f"/api/documents/{D}", None), ("GET", f"/api/documents/{D}/download", None),
               ("GET", f"/api/documents/{D}/download?version=1", None), ("GET", f"/api/documents/{D}/activity", None),
               ("GET", f"/api/documents/{D}/grants", None), ("PATCH", f"/api/documents/{D}", {"title": "pwned"}),
@@ -128,20 +131,20 @@ def main():
         check(f"{m:6} {p.replace(D, '<doc>').replace(G, '<grant>'):42} -> 404", s == 404 and b"Salary" not in b, s)
     s, b, _ = victor.call("POST", "/api/review/revoke", {"grant_ids": [G]})
     check("bulk-revoke someone else's grant refused", s in (403, 404), s)
-    s, b, _ = victor.call("GET", "/api/documents?q=Vera")
+    s, b, _ = victor.call("GET", "/api/documents?q=Akhilesh")
     check("search does not reveal it", json.loads(b)["total"] == 0)
     s, b, _ = victor.call("GET", "/api/documents?tag=payroll")
     titles = [d["title"] for d in json.loads(b)["documents"]]
-    check("tag filter does not reveal it", "Salary letter - Vera" not in titles, titles)
+    check("tag filter does not reveal it", "Salary letter - Akhilesh" not in titles, titles)
     d = victor.call("GET", "/api/dashboard")[1]
-    check("dashboard does not reveal it", b"Salary letter - Vera" not in d)
+    check("dashboard does not reveal it", b"Salary letter - Akhilesh" not in d)
     f = victor.call("GET", "/api/activity")[1]
-    check("activity feed does not reveal it", b"Salary letter - Vera" not in f)
+    check("activity feed does not reveal it", b"Salary letter - Akhilesh" not in f)
     s, _, _ = victor.call("GET", "/api/documents/" + "0" * 32)
     s2, _, _ = victor.call("GET", f"/api/documents/{D}")
     check("'not yours' looks identical to 'does not exist'", s == s2 == 404)
-    check("Olivia's document is unchanged", json.loads(olivia.call("GET", f"/api/documents/{D}")[1])["document"]["title"] == "Salary letter - Vera")
-
+    check("Advik's document is unchanged", json.loads(olivia.call("GET", f"/api/documents/{D}")[1])["document"]["title"] == "Salary letter - Akhilesh")
+ 
     section("Verbs, forged requests, sessions")
     s, _, _ = vera.call("HEAD", f"/api/documents/{D}/download")
     check("HEAD on a download is refused (no false audit record)", s == 405, s)
@@ -167,7 +170,7 @@ def main():
     check("viewer cannot open the audit trail", s == 403, s)
     s, _, _ = victor.call("PATCH", f"/api/admin/users/{me}", {"role": "admin"})
     check("viewer cannot make himself admin", s == 403, s)
-
+ 
     section("Administrator has no backdoor")
     # Step up first, so the refusals below come from the real controls
     # (no-backdoor, self-transfer, demo protection), not from "confirm your password".
@@ -179,7 +182,7 @@ def main():
     check("admin cannot transfer a document to themselves", s == 403, s)
     rows = json.loads(admin.call("GET", f"/api/admin/audit?document_id={D}&page_size=200")[1])["entries"]
     check("audit trail holds no raw file hashes (hash-confirmation)", not any("sha256" in (r["details"] or "") for r in rows if r["ts"] > "2026-10-22"))
-
+ 
     section("Two-step sign-in and demo safety")
     maya = Session(base)
     s, b, _ = maya.call("POST", "/api/auth/login", {"email": "maya@trustvault.test", "password": PW["maya"]})
@@ -188,7 +191,7 @@ def main():
     olivia_id = json.loads(olivia.call("GET", "/api/auth/me")[1])["user"]["id"]
     s, b, _ = admin.call("POST", f"/api/admin/users/{olivia_id}/reset-password", {"new_password": "Hijacked-Pass-1234"})
     check("demo accounts cannot be hijacked by the demo admin", s == 403 and b"reauth" not in b, s)
-
+ 
     section("Deployment sanity")
     rows = json.loads(admin.call("GET", "/api/admin/audit?action=auth.login&page_size=5")[1])["entries"]
     ip = next((r["ip"] for r in rows if r["ip"]), None)
@@ -203,11 +206,12 @@ def main():
               "proxy setting wrong: set TV_TRUSTED_PROXIES to the number of proxies in front of the app")
     v = json.loads(admin.call("GET", "/api/admin/audit/verify")[1])
     check(f"audit chain intact ({v.get('count')} records)", v.get("valid") is True, v.get("reason"))
-
+ 
     passed = sum(results)
     print(f"\n{passed}/{len(results)} checks passed." + ("" if passed == len(results) else "  FIX THE FAILURES BEFORE SUBMITTING."))
     sys.exit(0 if passed == len(results) else 1)
-
-
+ 
+ 
 if __name__ == "__main__":
     main()
+ 
