@@ -1,19 +1,19 @@
 import { api, errorNote, h, icon, put, state } from "../core.js";
 import { seal } from "../seal.js";
-
+ 
 // Shown ONLY when the server reports demo mode. These are the public demo
 // credentials already printed in README.md; they exist only on seeded demo data.
 const DEMO = [
-  ["admin@trustvault.test", "Admin-Demo-2026!", "Administrator"],
+  ["jeevan@trustvault.test", "Admin_123_demo", "Administrator"],
   ["admin2@trustvault.test", "Arjun-Demo-2026!", "Second administrator"],
-  ["olivia@trustvault.test", "Olivia-Demo-2026!", "Owner"],
-  ["oscar@trustvault.test", "Oscar-Demo-2026!", "Owner"],
+  ["advik@trustvault.test", "Owner1_123_demo", "Owner"],
+  ["vidya@trustvault.test", "Owner2_123_demo", "Owner"],
   ["maya@trustvault.test", "Maya-Demo-2026!", "Owner, two-step"],
-  ["vera@trustvault.test", "Vera-Demo-2026!", "Viewer"],
-  ["victor@trustvault.test", "Victor-Demo-2026!", "Viewer"],
+  ["akhilesh@trustvault.test", "Viewer1_123_demo", "Viewer"],
+  ["akhil@trustvault.test", "Viewer2_123_demo", "Viewer"],
   ["ext@partner.test", "Partner-Demo-2026!", "External viewer"],
 ];
-
+ 
 function frame(card) {
   const art = h("section", { class: "auth-art" },
     h("div", null,
@@ -27,7 +27,7 @@ function frame(card) {
   art.querySelector("svg.seal").classList.add("big-seal");
   return h("div", { class: "auth" }, art, h("main", { class: "auth-form", id: "main" }, card));
 }
-
+ 
 export async function viewLogin(render) {
   const err = h("div");
   const email = h("input", { id: "email", type: "email", autocomplete: "username", required: true });
@@ -64,7 +64,7 @@ export async function viewLogin(render) {
     }
   } catch (_) { /* no demo list */ }
 }
-
+ 
 export function viewMfa(render, challenge, email) {
   const err = h("div");
   const code = h("input", { id: "code", class: "otp", inputmode: "numeric", autocomplete: "one-time-code", maxlength: 6, pattern: "[0-9]{6}", required: true });
@@ -91,3 +91,4 @@ export function viewMfa(render, challenge, email) {
     h("p", { class: "small" }, h("button", { class: "linkish", onclick: () => viewLogin(render) }, "Use a different account")))));
   code.focus();
 }
+ 
