@@ -116,7 +116,7 @@ You need a public repo for the hand-in anyway, and the server will pull the code
    Click **Save**.
 5. Back on the Web tab, scroll to **Security** and turn on **Force HTTPS**.
 6. Scroll to the top and click the big green **Reload** button.
-7. Open `https://YOURNAME.pythonanywhere.com` and sign in as `olivia@trustvault.test` / `Olivia-Demo-2026!`.
+7. Open `https://YOURNAME.pythonanywhere.com` and sign in as `advik@trustvault.test` / `Owner1_123_demo`.
 
 ## Part E: Prove it is secure on the live site
 
@@ -128,13 +128,13 @@ source ~/tv-venv/bin/activate
 python -m scripts.check_live https://YOURNAME.pythonanywhere.com
 ```
 
-Every line should say **PASS**. The script signs in as three demo users and confirms that, on the deployed site, Victor cannot reach Vera's salary letter, the admin cannot download it, search hides it, and the audit chain is intact.
+Every line should say **PASS**. The script signs in as three demo users and confirms that, on the deployed site, Akhil cannot reach Akhilesh's salary letter, the admin cannot download it, search hides it, and the audit chain is intact.
 
 Then try it by hand:
 
-1. Sign in as Olivia and open "Salary letter - Vera". Copy the address bar.
-2. Open a private window, sign in as `victor@trustvault.test` / `Victor-Demo-2026!`, and paste the address. You should see **"Document not found."**
-3. Sign in as `admin@trustvault.test` → **Administration** → **Audit trail**, and filter **Result: Refused**. Victor's attempt is listed.
+1. Sign in as Advik and open "Salary letter - Akhilesh". Copy the address bar.
+2. Open a private window, sign in as `akhil@trustvault.test` / `Viewer2_123_demo`, and paste the address. You should see **"Document not found."**
+3. Sign in as `jeevan@trustvault.test` → **Administration** → **Audit trail**, and filter **Result: Refused**. Akhil's attempt is listed.
 
 Running `check_live` creates a few audit records and refused attempts. That is fine, but do a reset before the judges arrive (Part G).
 
@@ -230,7 +230,7 @@ On the free plan the app **re-seeds the demo automatically every time it starts*
 2. Sign in at **render.com** with your GitHub account.
 3. Click **New → Blueprint**, pick your `trustvault` repo, then **Apply**. Render reads `render.yaml`, builds the Docker image (a few minutes) and starts the service.
    - For the **paid, persistent** setup: before applying, edit `render.yaml`. Change `plan: free` to `plan: starter` and uncomment the `disk:` block. Commit and push.
-4. When the dashboard shows **Live**, open the URL it gives you (`https://trustvault-xxxx.onrender.com`). Sign in as `olivia@trustvault.test` / `Olivia-Demo-2026!`.
+4. When the dashboard shows **Live**, open the URL it gives you (`https://trustvault-xxxx.onrender.com`). Sign in as `advik@trustvault.test` / `Owner1_123_demo`.
 5. In the service's **Environment** tab, copy `TV_MASTER_KEY` and `TV_AUDIT_KEY` into a password manager.
 6. On your computer, run:
 
