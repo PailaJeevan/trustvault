@@ -4,6 +4,8 @@ Secure document sharing with a real audit trail. A document can be reached only 
 
 **Live demo:** https://trustvault-15td.onrender.com (Render free plan: it sleeps after 15 minutes idle, so the first visit can take about a minute, and it resets to the demo data when it wakes. Sign-in details are in the table below.)
 
+**Source code:** https://github.com/PailaJeevan/trustvault
+
 **Stack:** Python 3.11+ · Flask · SQLite · `cryptography` (AES-256-GCM). Three dependencies. No front-end framework.
 
 ## The interface
@@ -90,7 +92,7 @@ In development the app generates its keys into `instance/dev_keys.json`. In prod
 python -m unittest discover -s tests -t . -v    # 187 tests, about 30 seconds
 python -m scripts.mutation_check                # removes 67 named security checks one at a time
 python -m scripts.mutation_sweep                # removes EVERY authorize() call and auth decorator, one at a time
-python -m scripts.check_live https://YOUR-SITE  # 44 attacks against the deployed site
+python -m scripts.check_live https://trustvault-15td.onrender.com  # 48 checks against the live site
 ```
 
 The mutation check copies the repo, disables one check, such as the `authorize()` line in the download handler, and confirms that the suite fails. Expect `67/67 mutants killed` and `85/85 removed checks were caught`. See THREATS.md section **PT** for what attacking the finished system found. Test names map to the IDs in THREATS.md.
@@ -109,13 +111,15 @@ Store the backup and `TV_MASTER_KEY` separately. Neither one is useful without t
 
 ## Deploy
 
-Full click-by-click instructions for PythonAnywhere (free, HTTPS) are in **[DEPLOY.md](DEPLOY.md)**, including a troubleshooting table. After deploying, prove the live site holds:
+The live demo runs on **Render** at https://trustvault-15td.onrender.com, built from the `Dockerfile` by the Blueprint in `render.yaml`. Every push to `main` redeploys it. Step-by-step instructions, the settings it uses and a troubleshooting table are in **[DEPLOY.md](DEPLOY.md)**, which also covers PythonAnywhere and other Docker hosts.
+
+Prove the live site holds:
 
 ```bash
-python -m scripts.check_live https://trustvault-15td.onrender.com  # 44 attacks against the deployed site
+python -m scripts.check_live https://trustvault-15td.onrender.com  # 48 checks against the live site
 ```
 
-A `Dockerfile` and a one-click Render Blueprint (`render.yaml`) are included. Read the plan comparison in DEPLOY.md first: on Render's free plan the data, including the audit trail, resets when the server sleeps.
+It is on Render's free plan, so the server sleeps after 15 minutes without visitors, and the data, including the audit trail, resets to the demo data when it wakes (THREATS.md OP-17).
 
 ## Verify the audit trail
 
