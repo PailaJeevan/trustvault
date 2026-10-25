@@ -3,7 +3,7 @@
 ### Share confidential documents with exactly the right people, and prove it afterwards.
 
 **🌐 [Live demo](https://trustvault-15td.onrender.com)** &nbsp;·&nbsp;
-**🎬 [Demo video](https://github.com/PailaJeevan/trustvault/blob/main/TrustVault-Demo.mp4)** &nbsp;·&nbsp;
+**🎬 [Demo video](https://drive.google.com/file/d/19AhF_S_3fs8nve1jqsag5aiMCbpd3T-V/view?usp=drive_link)** &nbsp;·&nbsp;
 **📝 [Write-up](WRITEUP.md)** &nbsp;·&nbsp;
 **🛡️ [Threat model](THREATS.md)** &nbsp;·&nbsp;
 **🤖 [AI log](PROMPTS.md)** &nbsp;·&nbsp;
@@ -294,4 +294,4 @@ TrustVault was built with **Claude** (Anthropic), which I directed, ran, tested 
 | Schema and setup | [`app/schema.sql`](app/schema.sql), [`scripts/seed.py`](scripts/seed.py), [Run it on your machine](#-run-it-on-your-machine) |
 | API documentation | [API.md](API.md) |
 | Write-up | [WRITEUP.md](WRITEUP.md) |
-| Demo video | [TrustVault-Demo.mp4](https://github.com/PailaJeevan/trustvault/blob/main/TrustVault-Demo.mp4) |
+| Demo video | [TrustVault-Demo.mp4](https://drive.google.com/file/d/19AhF_S_3fs8nve1jqsag5aiMCbpd3T-V/view?usp=drive_link) |
